@@ -57,4 +57,4 @@ criterion_group!(day02, bench_day2_part1, bench_day2_part2);
 criterion_group!(day03, bench_day3_part1, bench_day3_part2);
 criterion_group!(day04, bench_day4_part1, bench_day4_part2);
 criterion_group!(day05, bench_day5_part1, bench_day5_part2);
-criterion_main!(day05);
+criterion_main!(day03);

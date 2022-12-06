@@ -2,8 +2,8 @@ pub fn part_one(input: &str) -> u32 {
     input.as_bytes()
         .iter()
         .chain(&[b'\n'; 1]) //keep from special casing last line
-        .fold((0, 0, 0), |(max, sum, current), line| {
-            if *line == b'\n' {
+        .fold((0, 0, 0), |(max, sum, current), c| {
+            if *c == b'\n' {
                 if current == 0 {
                     (max.max(sum), 0, 0)
                 }
@@ -12,7 +12,7 @@ pub fn part_one(input: &str) -> u32 {
                 }
                 
             } else {
-                (max, sum, current * 10 + (*line - b'0') as u32)
+                (max, sum, current * 10 + (*c - b'0') as u32)
             }
         }).0
 }
@@ -30,8 +30,8 @@ pub fn part_two(input: &str) -> u32 {
     let top3 = input.as_bytes()
         .iter()
         .chain(&[b'\n'; 2]) //keep from special casing last line
-        .fold(((0, 0, 0), 0, 0), |(top3, sum, current), line| {
-            if *line == b'\n' {
+        .fold(((0, 0, 0), 0, 0), |(top3, sum, current), c| {
+            if *c == b'\n' {
                 if current == 0 {
                     (track_top_3(top3, sum), 0, 0)
                 }
@@ -40,7 +40,7 @@ pub fn part_two(input: &str) -> u32 {
                 }
                 
             } else {
-                (top3, sum, current * 10 + (*line - b'0') as u32)
+                (top3, sum, current * 10 + (*c - b'0') as u32)
             }
         }).0;
         top3.0 + top3.1 + top3.2
