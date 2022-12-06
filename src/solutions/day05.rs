@@ -25,7 +25,7 @@ pub fn part_one(input: &str) -> String {
         .split(|b| matches!(b, b' ' | b'\n'))
         .skip(1)
         .step_by(2)
-        .map(|n| int_from_bytes::<usize>(n))
+        .map(int_from_bytes::<usize>)
         .array_chunks::<3>()
         .for_each(|[count, from, to]| {
             let (f, t) = if from < to {
@@ -68,7 +68,7 @@ pub fn part_two(input: &str) -> String {
         .split(|b| matches!(b, b' ' | b'\n'))
         .skip(1)
         .step_by(2)
-        .map(|n| int_from_bytes::<usize>(n))
+        .map(int_from_bytes::<usize>)
         .array_chunks::<3>()
         .for_each(|[count, from, to]| {
             let (f, t) = if from < to {
