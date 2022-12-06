@@ -1,27 +1,38 @@
 fn char_to_int(character: &u8) -> u8 {
     match character {
         b'a'..=b'z' => character - b'a' + 1,
-        _ => character - b'A' + 27
+        _ => character - b'A' + 27,
     }
 }
 
 pub fn part_one(input: &str) -> u32 {
-    input.lines()
+    input
+        .lines()
         .map(|line| {
             let bytes = line.as_bytes();
-            let (first, second) = bytes.split_at(line.len()/2);
-            (first.iter().map(|c| char_to_int(c)).fold(0, |map, val| map | 1u64 << val) &
-            second.iter().map(|c| char_to_int(c)).fold(0, |map, val| map | 1u64 << val))
+            let (first, second) = bytes.split_at(line.len() / 2);
+            (first
+                .iter()
+                .map(char_to_int)
+                .fold(0, |map, val| map | 1u64 << val)
+                & second
+                    .iter()
+                    .map(char_to_int)
+                    .fold(0, |map, val| map | 1u64 << val))
             .trailing_zeros()
         })
         .sum()
 }
 
 pub fn part_two(input: &str) -> u32 {
-    input.lines()
-        .map(|line| 
-            line.as_bytes().iter().map(|c| char_to_int(c)).fold(0, |map, val| map | 1u64 << val
-        ))
+    input
+        .lines()
+        .map(|line| {
+            line.as_bytes()
+                .iter()
+                .map(char_to_int)
+                .fold(0, |map, val| map | 1u64 << val)
+        })
         .array_chunks::<3>()
         .map(|m| (m[0] & m[1] & m[2]).trailing_zeros())
         .sum()

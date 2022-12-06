@@ -1,20 +1,20 @@
 pub fn part_one(input: &str) -> u32 {
-    input.as_bytes()
+    input
+        .as_bytes()
         .iter()
         .chain(&[b'\n'; 1]) //keep from special casing last line
         .fold((0, 0, 0), |(max, sum, current), c| {
             if *c == b'\n' {
                 if current == 0 {
                     (max.max(sum), 0, 0)
-                }
-                else {
+                } else {
                     (max, sum + current, 0)
                 }
-                
             } else {
                 (max, sum, current * 10 + (*c - b'0') as u32)
             }
-        }).0
+        })
+        .0
 }
 
 fn track_top_3(top3: (u32, u32, u32), n: u32) -> (u32, u32, u32) {
@@ -27,23 +27,23 @@ fn track_top_3(top3: (u32, u32, u32), n: u32) -> (u32, u32, u32) {
 }
 
 pub fn part_two(input: &str) -> u32 {
-    let top3 = input.as_bytes()
+    let top3 = input
+        .as_bytes()
         .iter()
         .chain(&[b'\n'; 2]) //keep from special casing last line
         .fold(((0, 0, 0), 0, 0), |(top3, sum, current), c| {
             if *c == b'\n' {
                 if current == 0 {
                     (track_top_3(top3, sum), 0, 0)
-                }
-                else {
+                } else {
                     (top3, sum + current, 0)
                 }
-                
             } else {
                 (top3, sum, current * 10 + (*c - b'0') as u32)
             }
-        }).0;
-        top3.0 + top3.1 + top3.2
+        })
+        .0;
+    top3.0 + top3.1 + top3.2
 }
 
 #[cfg(test)]

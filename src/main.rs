@@ -1,5 +1,5 @@
-use advent2022::*;
 use advent2022::solutions::*;
+use advent2022::*;
 //use std::env;
 use std::fmt::Display;
 use std::time::Instant;

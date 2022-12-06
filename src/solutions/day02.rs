@@ -1,18 +1,18 @@
 pub fn part_one(input: &str) -> u32 {
     let results = [4, 8, 3, 1, 5, 9, 7, 2, 6];
-    input.as_bytes().chunks(4)
-        .map(|line|
-            results[((line[0] - b'A') as usize) * 3 + (line[2] - b'X') as usize]
-        )
+    input
+        .as_bytes()
+        .chunks(4)
+        .map(|line| results[((line[0] - b'A') as usize) * 3 + (line[2] - b'X') as usize])
         .sum()
 }
 
 pub fn part_two(input: &str) -> u32 {
     let results = [3, 4, 8, 1, 5, 9, 2, 6, 7];
-    input.as_bytes().chunks(4)
-        .map(|line|
-            results[((line[0] - b'A') as usize) * 3 + (line[2] - b'X') as usize]
-        )
+    input
+        .as_bytes()
+        .chunks(4)
+        .map(|line| results[((line[0] - b'A') as usize) * 3 + (line[2] - b'X') as usize])
         .sum()
 }
 

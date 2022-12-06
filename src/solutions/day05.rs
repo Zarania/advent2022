@@ -2,21 +2,28 @@ pub fn part_one(input: &str) -> String {
     let (stacks, moves) = input.split_once("\n\n").unwrap();
 
     let size = (stacks.find('\n').unwrap() + 1) / 4;
-    let mut vecs : Vec<Vec<u8>> = Vec::with_capacity(size);
+    let mut vecs: Vec<Vec<u8>> = Vec::with_capacity(size);
 
     for _ in 0..size {
         vecs.push(vec![]);
     }
 
-    stacks.lines().rev().skip(1).for_each(|line|
-        line.as_bytes().iter().skip(1).step_by(4).enumerate()
-        .filter(|(_, &b)| b != b' ')
-        .for_each(|(i, &b)| vecs[i].push(b)));
+    stacks.lines().rev().skip(1).for_each(|line| {
+        line.as_bytes()
+            .iter()
+            .skip(1)
+            .step_by(4)
+            .enumerate()
+            .filter(|(_, &b)| b != b' ')
+            .for_each(|(i, &b)| vecs[i].push(b))
+    });
 
-    moves.as_bytes().split(|b| matches!(b, b' ' | b'\n'))
-        .skip(1).step_by(2).map(|n| {
-            int_from_bytes::<usize>(n)
-        })
+    moves
+        .as_bytes()
+        .split(|b| matches!(b, b' ' | b'\n'))
+        .skip(1)
+        .step_by(2)
+        .map(|n| int_from_bytes::<usize>(n))
         .array_chunks::<3>()
         .for_each(|[count, from, to]| {
             let (f, t) = if from < to {
@@ -38,21 +45,28 @@ pub fn part_two(input: &str) -> String {
     let (stacks, moves) = input.split_once("\n\n").unwrap();
 
     let size = (stacks.find('\n').unwrap() + 1) / 4;
-    let mut vecs : Vec<Vec<u8>> = Vec::with_capacity(size);
+    let mut vecs: Vec<Vec<u8>> = Vec::with_capacity(size);
 
     for _ in 0..size {
         vecs.push(vec![]);
     }
 
-    stacks.lines().rev().skip(1).for_each(|line|
-        line.as_bytes().iter().skip(1).step_by(4).enumerate()
-        .filter(|(_, &b)| b != b' ')
-        .for_each(|(i, &b)| vecs[i].push(b)));
+    stacks.lines().rev().skip(1).for_each(|line| {
+        line.as_bytes()
+            .iter()
+            .skip(1)
+            .step_by(4)
+            .enumerate()
+            .filter(|(_, &b)| b != b' ')
+            .for_each(|(i, &b)| vecs[i].push(b))
+    });
 
-    moves.as_bytes().split(|b| matches!(b, b' ' | b'\n'))
-        .skip(1).step_by(2).map(|n| {
-            int_from_bytes::<usize>(n)
-        })
+    moves
+        .as_bytes()
+        .split(|b| matches!(b, b' ' | b'\n'))
+        .skip(1)
+        .step_by(2)
+        .map(|n| int_from_bytes::<usize>(n))
         .array_chunks::<3>()
         .for_each(|[count, from, to]| {
             let (f, t) = if from < to {
