@@ -1,4 +1,4 @@
-use crate::int_from_bytes;
+use crate::int_from_bytes_exact;
 
 pub fn part_one(input: &str) -> String {
     let (stacks, moves) = input.split_once("\n\n").unwrap();
@@ -25,7 +25,7 @@ pub fn part_one(input: &str) -> String {
         .split(|b| matches!(b, b' ' | b'\n'))
         .skip(1)
         .step_by(2)
-        .map(int_from_bytes::<usize>)
+        .map(int_from_bytes_exact::<usize>)
         .array_chunks::<3>()
         .for_each(|[count, from, to]| {
             let (f, t) = if from < to {
@@ -68,7 +68,7 @@ pub fn part_two(input: &str) -> String {
         .split(|b| matches!(b, b' ' | b'\n'))
         .skip(1)
         .step_by(2)
-        .map(int_from_bytes::<usize>)
+        .map(int_from_bytes_exact::<usize>)
         .array_chunks::<3>()
         .for_each(|[count, from, to]| {
             let (f, t) = if from < to {
