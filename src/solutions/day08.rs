@@ -19,7 +19,7 @@ pub fn part_one(input: &str) -> u32 {
 
         for j in 0..length - 1 {
             let byte = get_byte(j, i, length, &mut forest);
-            let west_value = *byte as i8 & 15;
+            let west_value = *byte & 15;
             if west_max < west_value {
                 count += 1;
                 west_max = west_value;
@@ -69,38 +69,35 @@ pub fn part_one(input: &str) -> u32 {
 }
 
 pub fn part_two(input: &str) -> u32 {
-    let forest: Vec<&[u8]> = input.lines().map(|line| line.as_bytes()).collect();
+    let forest: Vec<&[u8]> = input.as_bytes().split(|&b| b == b'\n').collect();
 
     let length = forest.len();
-    let mut max = 0;
-    for i in 1..forest.len() - 1 {
-        for j in 1..forest.len() - 1 {
+    (1..length-1).map(|i| {
+        (1..length - 1).map(|j| {
             let current = forest[i][j];
-            let mut score = forest[i][0..j]
+            
+            forest[i][0..j]
                 .iter()
                 .rev()
                 .position(|&b| b >= current)
-                .unwrap_or(j - 1)
-                + 1;
-            score *= (0..i)
+                .unwrap_or(j.wrapping_sub(1))
+                .wrapping_add(1)
+            * (0..i)
                 .rev()
                 .position(|p| forest[p][j] >= current)
-                .unwrap_or(i - 1)
-                + 1;
-            score *= forest[i][j + 1..length]
+                .unwrap_or(i.wrapping_sub(1))
+                .wrapping_add(1)
+            * forest[i][j + 1..length]
                 .iter()
                 .position(|&b| b >= current)
-                .unwrap_or(length - j - 2)
-                + 1;
-            score *= (i + 1..length)
+                .unwrap_or(length.wrapping_sub(j).wrapping_sub(2))
+                .wrapping_add(1)
+            * (i + 1..length)
                 .position(|p| forest[p][j] >= current)
-                .unwrap_or(length - i - 2)
-                + 1;
-
-            max = max.max(score);
-        }
-    }
-    max as u32
+                .unwrap_or(length.wrapping_sub(i).wrapping_sub(2))
+                .wrapping_add(1)
+        }).max().unwrap()
+    }).max().unwrap() as u32
 }
 
 #[cfg(test)]
