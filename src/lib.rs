@@ -2,7 +2,6 @@
 #![feature(array_windows)]
 #![feature(get_many_mut)]
 #![feature(slice_group_by)]
-#![feature(iter_intersperse)]
 use std::env;
 use std::fs;
 use std::ops::ControlFlow;
