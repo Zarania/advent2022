@@ -37,51 +37,34 @@ pub fn part_one(input: &str) -> i32 {
         .0
 }
 
+fn process_cycle(cycle: i32, register: i32, result: &mut [u8]) -> i32 {
+    let row = cycle / 40;
+    let col = cycle % 40;
+    if register.abs_diff(col) < 2 {
+        result[(row * 41 + col) as usize] = b'#';
+    }
+
+    cycle + 1
+}
+
 pub fn part_two(input: &str) -> String {
     let mut register: i32 = 1;
     let mut cycle = 0;
-    let bytes = input
-        .as_bytes()
-        .split(|&b| b == b'\n')
-        .flat_map(|line| {
-            if line[0] == b'n' {
-                //similar trick here by multiplying 11 by the result of abs_diff to change between # and .
-                let diff = register.abs_diff(cycle) > 1;
-                cycle = (cycle + 1) % 40;
-                vec![b'#' + 11 * diff as u8]
-            } else {
-                let mut result = Vec::with_capacity(2);
-                result.push(b'#' + 11 * (register.abs_diff(cycle) > 1) as u8);
 
-                cycle = (cycle + 1) % 40;
-                result.push(b'#' + 11 * (register.abs_diff(cycle) > 1) as u8);
-
-                cycle = (cycle + 1) % 40;
-
-                register += int_from_bytes_signed::<i32>(&line[5..]);
-                result
-            }
-        })
-        .collect::<Vec<_>>();
-
-    //returning the string to make unit testing easier
-    //if you want to actually print the answer on a 40 line grid, uncomment this part
-    /*for b in bytes.chunks(40).map(|b| {
-        let line = b
-            .iter()
-            .map(|&c| match c {
-                b'#' => 9619,
-                b'.' => 9617,
-                _ => unreachable!(),
-            })
-            .collect::<Vec<_>>();
-        String::from_utf16(&line).unwrap()
-    }) {
-        println!("{}", b);
+    let mut result = vec![b'.'; 245];
+    for i in (40..245).step_by(41) {
+        result[i] = b'\n'
     }
-    println!();*/
 
-    String::from_utf8(bytes).unwrap()
+    input.as_bytes().split(|&b| b == b'\n').for_each(|line| {
+        cycle = process_cycle(cycle, register, &mut result);
+        if line[0] == b'a' {
+            cycle = process_cycle(cycle, register, &mut result);
+            register += int_from_bytes_signed::<i32>(&line[5..]);
+        }
+    });
+
+    String::from_utf8(result).unwrap()
 }
 
 #[cfg(test)]
@@ -99,7 +82,7 @@ mod tests {
     fn test_part_two() {
         use crate::read_file;
         let input = read_file("examples", 10);
-        assert_eq!(part_two(&input), "##..##..##..##..##..##..##..##..##..##..###...###...###...###...###...###...###.####....####....####....####....####....#####.....#####.....#####.....#####.....######......######......######......###########.......#######.......#######.....".to_string());
+        assert_eq!(part_two(&input), "##..##..##..##..##..##..##..##..##..##..\n###...###...###...###...###...###...###.\n####....####....####....####....####....\n#####.....#####.....#####.....#####.....\n######......######......######......####\n#######.......#######.......#######.....".to_string());
     }
 
     #[test]
@@ -113,6 +96,6 @@ mod tests {
     fn solution_part_two() {
         use crate::read_file;
         let input = read_file("inputs", 10);
-        assert_eq!(part_two(&input), "####.#..#.###..#..#.####.###..#..#.####.#....#.#..#..#.#..#.#....#..#.#..#....#.###..##...#..#.####.###..#..#.#..#...#..#....#.#..###..#..#.#....###..#..#..#...#....#.#..#.#..#..#.#....#....#..#.#....####.#..#.#..#.#..#.####.#.....##..####.".to_string());
+        assert_eq!(part_two(&input), "####.#..#.###..#..#.####.###..#..#.####.\n#....#.#..#..#.#..#.#....#..#.#..#....#.\n###..##...#..#.####.###..#..#.#..#...#..\n#....#.#..###..#..#.#....###..#..#..#...\n#....#.#..#.#..#..#.#....#....#..#.#....\n####.#..#.#..#.#..#.####.#.....##..####.".to_string());
     }
 }

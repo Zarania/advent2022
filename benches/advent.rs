@@ -167,4 +167,4 @@ criterion_group!(day08, bench_day8_part1, bench_day8_part2);
 criterion_group!(day09, bench_day9_part1, bench_day9_part2);
 criterion_group!(day10, bench_day10_part1, bench_day10_part2);
 criterion_group!(day11, bench_day11_part1, bench_day11_part2);
-criterion_main!(day11);
+criterion_main!(day10);

@@ -2,6 +2,7 @@
 #![feature(array_windows)]
 #![feature(get_many_mut)]
 #![feature(slice_group_by)]
+#![feature(iter_intersperse)]
 use std::env;
 use std::fs;
 use std::ops::ControlFlow;
@@ -49,36 +50,25 @@ where
 
 pub fn int_from_bytes_signed<T>(s: &[u8]) -> T
 where
-    T: From<u8>
-        + std::ops::Mul<T, Output = T>
-        + std::ops::Add<T, Output = T>
-        + std::ops::MulAssign<i32>,
+    T: From<i8> + std::ops::Mul<T, Output = T> + std::ops::Add<T, Output = T>,
 {
-    let mut sign = T::from(1);
-    s.iter().fold(T::from(0), |n, c| {
-        let r = match c {
-            b'0' => Some(T::from(0)),
-            b'1' => Some(T::from(1)),
-            b'2' => Some(T::from(2)),
-            b'3' => Some(T::from(3)),
-            b'4' => Some(T::from(4)),
-            b'5' => Some(T::from(5)),
-            b'6' => Some(T::from(6)),
-            b'7' => Some(T::from(7)),
-            b'8' => Some(T::from(8)),
-            b'9' => Some(T::from(9)),
-            b'-' => {
-                sign *= -1;
-                Some(T::from(0))
-            }
-            _ => None,
-        };
-        if let Some(r) = r {
+    T::from((s[0] != b'-') as i8 * 2 - 1)
+        * s.iter().fold(T::from(0), |n, c| {
+            let r = match c {
+                b'0' => T::from(0),
+                b'1' => T::from(1),
+                b'2' => T::from(2),
+                b'3' => T::from(3),
+                b'4' => T::from(4),
+                b'5' => T::from(5),
+                b'6' => T::from(6),
+                b'7' => T::from(7),
+                b'8' => T::from(8),
+                b'9' => T::from(9),
+                _ => T::from(0),
+            };
             n * T::from(10) + r
-        } else {
-            n
-        }
-    }) * sign
+        })
 }
 
 fn int_from_bytes_greedy<T>(s: &[u8]) -> T

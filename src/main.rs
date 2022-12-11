@@ -35,7 +35,7 @@ macro_rules! solve_day {
 fn main() {
     //let args: Vec<String> = env::args().collect();
     //let day: u8 = args[1].clone().parse().unwrap();
-    let day = 11;
+    let day = 10;
     let input = read_file("inputs", day);
 
     match day {
