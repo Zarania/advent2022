@@ -1,4 +1,4 @@
-Scientific run benchmark on my linux vm (Ryzen 5950x cpu, 1 virtual core, 4gb memory)
+*Totally* Scientific run benchmark on my linux vm (Ryzen 5950x cpu, 1 virtual core, 4gb memory)
 D1P1: 5.67 µs  
 D1P2: 7.23 µs  
 
