@@ -15,8 +15,8 @@ struct Monkey {
     inspect_count: usize,
 }
 
-fn solve(mut monkeys: Vec<Monkey>, rounds: usize, f: impl Fn(usize) -> usize) -> usize {
-    for _ in 0..rounds {
+fn solve<const ROUNDS: usize>(mut monkeys: Vec<Monkey>, f: impl Fn(usize) -> usize) -> usize {
+    for _ in 0..ROUNDS {
         for i in 0..monkeys.len() {
             let temp_monkey = &monkeys[i];
             let false_index = temp_monkey.false_index;
@@ -81,7 +81,7 @@ fn parse(input: &str) -> Vec<Monkey> {
 }
 
 pub fn part_one(input: &str) -> usize {
-    solve(parse(input), 20, |x| x / 3)
+    solve::<20>(parse(input), |x| x / 3)
 }
 
 pub fn part_two(input: &str) -> usize {
@@ -89,7 +89,7 @@ pub fn part_two(input: &str) -> usize {
 
     let total_mod: usize = monkeys.iter().map(|m| m.test).product();
 
-    solve(parse(input), 10000, |x| x % total_mod)
+    solve::<10000>(monkeys, |x| x % total_mod)
 }
 
 #[cfg(test)]
