@@ -24,8 +24,8 @@ fn solve(mut monkeys: Vec<Monkey>, rounds: usize, f: impl Fn(usize) -> usize) ->
             if let Ok([monkey, false_monkey, true_monkey]) =
                 monkeys.get_many_mut([i, false_index, true_index])
             {
+                monkey.inspect_count += monkey.items.len();
                 for mut item in monkey.items.drain(..) {
-                    monkey.inspect_count += 1;
                     item = match monkey.operation {
                         Operation::Add(x) => f(item + x),
                         Operation::Multiply(x) => f(item * x),
