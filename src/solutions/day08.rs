@@ -72,32 +72,38 @@ pub fn part_two(input: &str) -> u32 {
     let forest: Vec<&[u8]> = input.as_bytes().split(|&b| b == b'\n').collect();
 
     let length = forest.len();
-    (1..length-1).map(|i| {
-        (1..length - 1).map(|j| {
-            let current = forest[i][j];
-            
-            forest[i][0..j]
-                .iter()
-                .rev()
-                .position(|&b| b >= current)
-                .unwrap_or(j.wrapping_sub(1))
-                .wrapping_add(1)
-            * (0..i)
-                .rev()
-                .position(|p| forest[p][j] >= current)
-                .unwrap_or(i.wrapping_sub(1))
-                .wrapping_add(1)
-            * forest[i][j + 1..length]
-                .iter()
-                .position(|&b| b >= current)
-                .unwrap_or(length.wrapping_sub(j).wrapping_sub(2))
-                .wrapping_add(1)
-            * (i + 1..length)
-                .position(|p| forest[p][j] >= current)
-                .unwrap_or(length.wrapping_sub(i).wrapping_sub(2))
-                .wrapping_add(1)
-        }).max().unwrap()
-    }).max().unwrap() as u32
+    (1..length - 1)
+        .map(|i| {
+            (1..length - 1)
+                .map(|j| {
+                    let current = forest[i][j];
+
+                    forest[i][0..j]
+                        .iter()
+                        .rev()
+                        .position(|&b| b >= current)
+                        .unwrap_or(j.wrapping_sub(1))
+                        .wrapping_add(1)
+                        * (0..i)
+                            .rev()
+                            .position(|p| forest[p][j] >= current)
+                            .unwrap_or(i.wrapping_sub(1))
+                            .wrapping_add(1)
+                        * forest[i][j + 1..length]
+                            .iter()
+                            .position(|&b| b >= current)
+                            .unwrap_or(length.wrapping_sub(j).wrapping_sub(2))
+                            .wrapping_add(1)
+                        * (i + 1..length)
+                            .position(|p| forest[p][j] >= current)
+                            .unwrap_or(length.wrapping_sub(i).wrapping_sub(2))
+                            .wrapping_add(1)
+                })
+                .max()
+                .unwrap()
+        })
+        .max()
+        .unwrap() as u32
 }
 
 #[cfg(test)]

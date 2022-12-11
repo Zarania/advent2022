@@ -1,6 +1,6 @@
+use hashers::fx_hash::FxHasher;
 use std::collections::HashSet;
 use std::hash::BuildHasherDefault;
-use hashers::fx_hash::FxHasher;
 
 use crate::int_from_bytes_exact;
 
@@ -8,16 +8,18 @@ fn calculate<const COUNT: usize>(input: &str) -> u32 {
     let mut knots = [(0, 0); COUNT];
 
     let mut size = 0;
-    let moves = input.as_bytes()
+    let moves = input
+        .as_bytes()
         .split(|&b| b == b'\n')
         .map(|line| {
             let amount = int_from_bytes_exact::<u32>(&line[2..]);
             size += amount;
-            
+
             (line[0], amount)
         })
         .collect::<Vec<_>>();
-    let mut positions = HashSet::with_capacity_and_hasher(size as usize, BuildHasherDefault::<FxHasher>::default());
+    let mut positions =
+        HashSet::with_capacity_and_hasher(size as usize, BuildHasherDefault::<FxHasher>::default());
     positions.insert(knots[COUNT - 1]);
 
     for (direction, amount) in moves {
@@ -37,8 +39,7 @@ fn calculate<const COUNT: usize>(input: &str) -> u32 {
                         knots[i + 1].0 + x_dist.signum(),
                         knots[i + 1].1 + y_dist.signum(),
                     );
-                }
-                else {
+                } else {
                     break;
                 }
             }

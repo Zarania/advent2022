@@ -12,10 +12,7 @@ fn print_result<T: Display>(func: impl FnOnce(&str) -> T, input: &str) {
     let timer = Instant::now();
     let result = func(input);
     let time = timer.elapsed();
-    println!(
-        "{} {}(elapsed: {:.2?}){}",
-        result, ANSI_ITALIC, time, ANSI_RESET
-    );
+    println!("{result} {ANSI_ITALIC}(elapsed: {time:.2?}){ANSI_RESET}");
 }
 
 macro_rules! solve_day {
@@ -23,11 +20,11 @@ macro_rules! solve_day {
         use $day::*;
         println!("----");
         println!("");
-        println!("🎄 {}Part 1{} 🎄", ANSI_BOLD, ANSI_RESET);
+        println!("🎄 {ANSI_BOLD}Part 1{ANSI_RESET} 🎄");
         println!("");
         print_result(part_one, $input);
         println!("");
-        println!("🎄 {}Part 2{} 🎄", ANSI_BOLD, ANSI_RESET);
+        println!("🎄 {ANSI_BOLD}Part 2{ANSI_RESET} 🎄");
         println!("");
         print_result(part_two, $input);
         println!("");
@@ -38,7 +35,7 @@ macro_rules! solve_day {
 fn main() {
     //let args: Vec<String> = env::args().collect();
     //let day: u8 = args[1].clone().parse().unwrap();
-    let day = 9;
+    let day = 10;
     let input = read_file("inputs", day);
 
     match day {
@@ -67,6 +64,6 @@ fn main() {
         //23 => solve_day!(day23, &input),
         //24 => solve_day!(day24, &input),
         //25 => solve_day!(day25, &input),
-        _ => println!("day not solved: {}", day),
+        _ => println!("day not solved: {day}"),
     }
 }
