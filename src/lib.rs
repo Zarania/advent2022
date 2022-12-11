@@ -1,5 +1,7 @@
 #![feature(iter_array_chunks)]
 #![feature(array_windows)]
+#![feature(get_many_mut)]
+#![feature(slice_group_by)]
 use std::env;
 use std::fs;
 use std::ops::ControlFlow;
