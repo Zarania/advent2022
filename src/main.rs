@@ -35,7 +35,7 @@ macro_rules! solve_day {
 fn main() {
     //let args: Vec<String> = env::args().collect();
     //let day: u8 = args[1].clone().parse().unwrap();
-    let day = 10;
+    let day = 12;
     let input = read_file("inputs", day);
 
     match day {
@@ -50,7 +50,7 @@ fn main() {
         9 => solve_day!(day09, &input),
         10 => solve_day!(day10, &input),
         11 => solve_day!(day11, &input),
-        //12 => solve_day!(day12, &input),
+        12 => solve_day!(day12, &input),
         //13 => solve_day!(day13, &input),
         //14 => solve_day!(day14, &input),
         //15 => solve_day!(day15, &input),
