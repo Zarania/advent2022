@@ -7,8 +7,7 @@ fn search(
     end: (usize, usize),
 ) -> Option<u32> {
     let mut visited = vec![false; map.len()];
-
-    let mut queue = VecDeque::new();
+    let mut queue = VecDeque::with_capacity(64);
     queue.push_back((start, 0));
     while let Some(((x, y), len)) = queue.pop_front() {
         if (x, y) == end {
@@ -34,7 +33,7 @@ fn search(
 fn search_rev(map: &Vec<u8>, line_length: usize, start: (usize, usize), end: u8) -> Option<u32> {
     let mut visited = vec![false; map.len()];
 
-    let mut queue = VecDeque::new();
+    let mut queue = VecDeque::with_capacity(64);
     queue.push_back((start, 0));
     while let Some(((x, y), len)) = queue.pop_front() {
         if map[x + y * line_length] == end {
