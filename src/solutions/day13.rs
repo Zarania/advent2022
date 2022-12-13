@@ -1,9 +1,6 @@
-use nom::{
-    branch::alt, character::complete as ch, combinator::map, multi::separated_list0,
-    sequence::delimited, Finish, IResult,
-};
 use std::cmp::Ordering;
 
+use crate::int_from_bytes_exact;
 #[derive(PartialEq, Eq, Clone)]
 enum Packet {
     Interger(u32),
@@ -29,25 +26,39 @@ impl Ord for Packet {
     }
 }
 
-fn parse(input: &str) -> Vec<Packet> {
-    fn parse(line: &str) -> IResult<&str, Packet> {
-        alt((
-            delimited(
-                ch::char('['),
-                map(separated_list0(ch::char(','), parse), Packet::List),
-                ch::char(']'),
-            ),
-            map(ch::u32, Packet::Interger),
-        ))(line)
+impl Packet {
+    fn get_data(data: &[u8]) -> Packet {
+        if data[0] == b'[' {
+            let mut stack: i32 = 0;
+            Packet::List(
+                data[1..data.len() - 1]
+                    .split(|&c| {
+                        if c == b'[' {
+                            stack += 1
+                        } else if c == b']' {
+                            stack -= 1
+                        }
+                        c == b',' && stack == 0
+                    })
+                    .filter_map(|s| (!s.is_empty()).then(|| Self::get_data(s)))
+                    .collect(),
+            )
+        } else {
+            Packet::Interger(int_from_bytes_exact(data))
+        }
     }
-    input
-        .lines()
-        .filter_map(|l| parse(l).finish().map(|x| x.1).ok())
-        .collect()
+
+    fn new(data: &[u8]) -> Self {
+        Self::get_data(data)
+    }
 }
 
 pub fn part_one(input: &str) -> u32 {
-    parse(input)
+    input
+        .as_bytes()
+        .split(|&b| b == b'\n')
+        .filter(|line| !line.is_empty())
+        .map(Packet::new)
         .array_chunks::<2>()
         .enumerate()
         .filter(|(_, [packet1, packet2])| packet1 < packet2)
@@ -56,14 +67,20 @@ pub fn part_one(input: &str) -> u32 {
 }
 
 pub fn part_two(input: &str) -> u32 {
-    let mut packets = parse(input);
+    let mut packets = input
+        .as_bytes()
+        .split(|b| *b == b'\n')
+        .filter(|line| !line.is_empty())
+        .map(Packet::new)
+        .collect::<Vec<_>>();
 
-    let [two, six] = &*parse("[[2]]\n[[6]]") else { unreachable!() };
+    let two = Packet::new("[[2]]".as_bytes());
+    let six = Packet::new("[[6]]".as_bytes());
     packets.push(two.clone());
     packets.push(six.clone());
 
     packets.sort_unstable();
-    ((packets.binary_search(two).unwrap() + 1) * (packets.binary_search(six).unwrap() + 1)) as u32
+    ((packets.binary_search(&two).unwrap() + 1) * (packets.binary_search(&six).unwrap() + 1)) as u32
 }
 
 #[cfg(test)]
