@@ -74,8 +74,8 @@ pub fn part_two(input: &str) -> u32 {
         .map(Packet::new)
         .collect::<Vec<_>>();
 
-    let two = Packet::new("[[2]]".as_bytes());
-    let six = Packet::new("[[6]]".as_bytes());
+    let two = Packet::List(vec![Packet::Interger(2)]);
+    let six = Packet::List(vec![Packet::Interger(6)]);
     packets.push(two.clone());
     packets.push(six.clone());
 
