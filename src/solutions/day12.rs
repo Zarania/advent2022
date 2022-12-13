@@ -1,19 +1,15 @@
-fn search<const SIZE: usize>(
+use std::collections::VecDeque;
+
+fn search(
     map: &Vec<u8>,
     line_length: usize,
     start: (usize, usize),
     end: (usize, usize),
 ) -> Option<u32> {
     let mut visited = vec![false; map.len()];
-
-    let mut ring_buffer = [((0,0), 0); SIZE];
-    let mut push = 1;
-    let mut pop = 0;
-    ring_buffer[0] = (start, 0);
-
-    while push != pop {
-        let ((x, y), len) = ring_buffer[pop];
-        pop = (pop + 1) % SIZE;
+    let mut queue = VecDeque::with_capacity(64);
+    queue.push_back((start, 0));
+    while let Some(((x, y), len)) = queue.pop_front() {
         if (x, y) == end {
             return Some(len);
         }
@@ -26,8 +22,7 @@ fn search<const SIZE: usize>(
             let square = map[nx + ny * line_length];
             if (map[x + y * line_length] + 1 >= square) && !visited[nx + ny * line_length] {
                 visited[nx + ny * line_length] = true;
-                ring_buffer[push] = ((nx, ny), len + 1);
-                push = (push + 1) % SIZE;
+                queue.push_back(((nx, ny), len + 1));
             }
         }
     }
@@ -35,18 +30,12 @@ fn search<const SIZE: usize>(
     None
 }
 
-fn search_rev<const SIZE: usize>(map: &Vec<u8>, line_length: usize, start: (usize, usize), end: u8) -> Option<u32> {
+fn search_rev(map: &Vec<u8>, line_length: usize, start: (usize, usize), end: u8) -> Option<u32> {
     let mut visited = vec![false; map.len()];
 
-    let mut ring_buffer = [((0,0), 0); SIZE];
-    let mut push = 1;
-    let mut pop = 0;
-    ring_buffer[0] = (start, 0);
-    
-    while push != pop {
-        let ((x, y), len) = ring_buffer[pop];
-        pop = (pop + 1) % SIZE;
-        
+    let mut queue = VecDeque::with_capacity(64);
+    queue.push_back((start, 0));
+    while let Some(((x, y), len)) = queue.pop_front() {
         if map[x + y * line_length] == end {
             return Some(len);
         }
@@ -59,8 +48,7 @@ fn search_rev<const SIZE: usize>(map: &Vec<u8>, line_length: usize, start: (usiz
             let square = map[nx + ny * line_length];
             if (map[x + y * line_length] - 1 <= square) && !visited[nx + ny * line_length] {
                 visited[nx + ny * line_length] = true;
-                ring_buffer[push] = ((nx, ny), len + 1);
-                push = (push + 1) % SIZE;
+                queue.push_back(((nx, ny), len + 1));
             }
         }
     }
@@ -82,13 +70,13 @@ fn parse(input: &str) -> (Vec<u8>, usize, (usize, usize), (usize, usize)) {
 
 pub fn part_one(input: &str) -> u32 {
     let (map, line_length, start, end) = parse(input);
-    search::<64>(&map, line_length, start, end).unwrap()
+    search(&map, line_length, start, end).unwrap()
 }
 
 pub fn part_two(input: &str) -> u32 {
     let (map, line_length, _start, end) = parse(input);
 
-    search_rev::<64>(&map, line_length, end, b'a').unwrap()
+    search_rev(&map, line_length, end, b'a').unwrap()
 }
 
 #[cfg(test)]
