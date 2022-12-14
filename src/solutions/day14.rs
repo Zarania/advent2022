@@ -1,21 +1,14 @@
-use hashers::fx_hash::FxHasher;
-use std::collections::HashSet;
-use std::hash::BuildHasherDefault;
-#[derive(PartialEq, Eq, Hash, Clone, Copy, Debug)]
-struct Coordinate {
-    x: usize,
-    y: usize,
-}
-struct Map {
-    grid: HashSet<Coordinate, BuildHasherDefault<FxHasher>>,
-    path: Vec<Coordinate>,
-    height: usize,
-}
+use std::time::Instant;
 
-impl Coordinate {
-    fn new(x: usize, y: usize) -> Self {
-        Coordinate { x, y }
-    }
+const DROP_X: usize = 500;
+const X_MIN: usize = 0;
+const X_MAX: usize = DROP_X * 2;
+const WIDTH: usize = X_MAX - X_MIN + 1;
+
+struct Map {
+    grid: Vec<bool>,
+    path: Vec<usize>,
+    height: usize
 }
 
 impl Map {
@@ -26,28 +19,28 @@ impl Map {
 
         loop {
             let position = *self.path.last().unwrap();
-            if position.y >= self.height {
+            if position / WIDTH >= self.height - 1 {
                 return false;
             }
             let mut new_position = position;
-            new_position.y += 1;
-            if !self.grid.contains(&new_position) {
+            new_position += X_MAX;
+            if !self.grid[new_position] {
                 self.path.push(new_position);
                 continue;
             }
 
-            new_position.x -= 1;
-            if !self.grid.contains(&new_position) {
+            new_position -= 1;
+            if !self.grid[new_position] {
                 self.path.push(new_position);
                 continue;
             }
 
-            new_position.x += 2;
-            if !self.grid.contains(&new_position) {
+            new_position += 2;
+            if !self.grid[new_position] {
                 self.path.push(new_position);
                 continue;
             }
-            self.grid.insert(position);
+            self.grid[position] = true;
             self.path.pop();
             return true;
         }
@@ -60,81 +53,79 @@ impl Map {
 
         loop {
             let position = *self.path.last().unwrap();
-            if position.y > self.height {
-                self.grid.insert(position);
+            if position / WIDTH >= self.height - 1 {
+                self.grid[position] = true;
                 self.path.pop();
                 return true;
             }
             let mut new_position = position;
-            new_position.y += 1;
-            if !self.grid.contains(&new_position) {
+            new_position += X_MAX;
+            if !self.grid[new_position] {
                 self.path.push(new_position);
                 continue;
             }
 
-            new_position.x -= 1;
-            if !self.grid.contains(&new_position) {
+            new_position -= 1;
+            if !self.grid[new_position] {
                 self.path.push(new_position);
                 continue;
             }
 
-            new_position.x += 2;
-            if !self.grid.contains(&new_position) {
+            new_position += 2;
+            if !self.grid[new_position] {
                 self.path.push(new_position);
                 continue;
             }
-            self.grid.insert(position);
+            self.grid[position] = true;
             self.path.pop();
             return true;
         }
     }
 
     fn new(input: &str) -> Self {
-        let mut grid = HashSet::with_capacity_and_hasher(
-            1000,
-            BuildHasherDefault::<FxHasher>::default(),
-        );
-        input
+        let mut height = 0;
+        let positions = input
             .lines()
             .map(|line| {
                 line.split(" -> ")
                     .filter_map(|s| {
                         s.split_once(',').map(|(a, b)| {
-                            (a.parse::<usize>().unwrap(), b.parse::<usize>().unwrap())
+                            let coords = (a.parse::<usize>().unwrap(), b.parse::<usize>().unwrap());
+                            height = height.max(coords.1);
+                            coords
                         })
                     })
                     .collect::<Vec<_>>()
             })
-            .for_each(|line| {
+            .collect::<Vec<_>>();
+            height = height + 2;
+            let mut grid = vec![false; X_MAX * height];
+            positions.iter().for_each(|line| {
                 for pair in line.windows(2) {
                     let (start, end) = (pair[0], pair[1]);
                     //left to right
                     if start.1 == end.1 {
                         let (min, max) = (start.0.min(end.0), start.0.max(end.0));
                         for i in min..=max {
-                            grid.insert(Coordinate::new(i, start.1));
+                            grid[i + start.1 * X_MAX] = true;
                         }
                     } else {
                         let (min, max) = (start.1.min(end.1), start.1.max(end.1));
                         for i in min..=max {
-                            grid.insert(Coordinate::new(start.0, i));
+                            grid[start.0 + i * X_MAX] = true;
                         }
                     }
                 }
             });
-        let height = grid.iter().max_by(|c1, c2| c1.y.cmp(&c2.y)).unwrap().y;
         let mut path = Vec::with_capacity(height);
-        path.push(Coordinate::new(500, 0));
-        Map { grid, path, height }
+        path.push(DROP_X);
+        Map { grid, path,  height}
     }
 
-    fn _print_grid(&self) {
-        let min_x = self.grid.iter().min_by(|c1, c2| c1.x.cmp(&c2.x)).unwrap().x;
-        let max_x = self.grid.iter().max_by(|c1, c2| c1.x.cmp(&c2.x)).unwrap().x;
-
-        for y in 0..=self.height {
-            for x in min_x..=max_x {
-                if self.grid.contains(&Coordinate::new(x, y)) {
+    fn _print_grid(&self, height: usize, width: usize, start: usize) {
+        for y in 0..height {
+            for x in start..=start + width {
+                if self.grid[x + y * X_MAX] {
                     print!("#");
                 } else {
                     print!(".");
@@ -158,6 +149,7 @@ pub fn part_one(input: &str) -> u32 {
 pub fn part_two(input: &str) -> u32 {
     let mut grid = Map::new(input);
     let mut grains = 0;
+
     while grid.drop_grain_2() {
         grains += 1;
     }
