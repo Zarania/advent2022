@@ -9,6 +9,7 @@ const HEIGHT: usize = 157 + 2;
 struct Map {
     grid: [bool; X_MAX * HEIGHT],
     path: Vec<usize>,
+    height: usize,
 }
 
 impl Map {
@@ -19,7 +20,7 @@ impl Map {
 
         loop {
             let position = *self.path.last().unwrap();
-            if position / WIDTH >= HEIGHT - 1 {
+            if position / WIDTH >= self.height - 1 {
                 return false;
             }
             let mut new_position = position;
@@ -53,13 +54,13 @@ impl Map {
 
         loop {
             let position = *self.path.last().unwrap();
-            if position / WIDTH >= HEIGHT - 1 {
+            if position / WIDTH >= self.height - 1 {
                 self.grid[position] = true;
                 self.path.pop();
                 return true;
             }
             let mut new_position = position;
-            new_position += X_MAX;
+            new_position += WIDTH;
             if !self.grid[new_position] {
                 self.path.push(new_position);
                 continue;
@@ -82,7 +83,6 @@ impl Map {
         }
     }
 
-    
     fn new(input: &str) -> Self {
         let mut has_prev = false;
         let mut is_y = false;
@@ -90,7 +90,8 @@ impl Map {
         let mut current = 0;
         let mut sum = 0;
         let mut grid = [false; X_MAX * HEIGHT];
-        
+        let mut height = 0;
+
         fn draw_line(grid: &mut [bool; X_MAX * HEIGHT], from: usize, to: usize) {
             //same Y
             if from % WIDTH == to % WIDTH {
@@ -109,15 +110,18 @@ impl Map {
         input.as_bytes().iter().for_each(|byte| {
             match byte {
                 //
-                b' ' => if is_y {
-                    let next = current + sum * WIDTH;
-                    if has_prev {
-                        draw_line(&mut grid, prev, next);
+                b' ' => {
+                    if is_y {
+                        height = height.max(sum);
+                        let next = current + sum * WIDTH;
+                        if has_prev {
+                            draw_line(&mut grid, prev, next);
+                        }
+                        prev = next;
+                        sum = 0;
+                        is_y = false;
+                        has_prev = true;
                     }
-                    prev = next;
-                    sum = 0;
-                    is_y = false;
-                    has_prev = true;
                 }
                 b',' => {
                     current = sum;
@@ -125,6 +129,7 @@ impl Map {
                     is_y = true;
                 }
                 b'\n' => {
+                    height = height.max(sum);
                     let next = current + sum * WIDTH;
                     draw_line(&mut grid, prev, next);
                     has_prev = false;
@@ -140,10 +145,10 @@ impl Map {
 
         let next = current + sum * WIDTH;
         draw_line(&mut grid, prev, next);
-        
-        let mut path = Vec::with_capacity(HEIGHT);
+        height += 2;
+        let mut path = Vec::with_capacity(height);
         path.push(DROP_X);
-        Map { grid, path}
+        Map { grid, path, height }
     }
 
     fn _print_grid(&self, height: usize, width: usize, start: usize) {
@@ -193,7 +198,7 @@ mod tests {
         assert_eq!(part_one(&input), 24);
     }
 
-    /*#[test]
+    #[test]
     fn test_part_two() {
         use crate::read_file;
         let input = read_file("examples", 14);
@@ -212,5 +217,5 @@ mod tests {
         use crate::read_file;
         let input = read_file("inputs", 14);
         assert_eq!(part_two(&input), 23390);
-    }*/
+    }
 }
